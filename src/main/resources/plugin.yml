@@ -1,0 +1,12 @@
+name: GitPull
+version: 1.0.1
+main: com.calverin.gitpull.GitPull
+description: Pull data from a private GitHub Repository
+author: Calverin
+website: https://calverin.com
+api-version: '1.20'
+commands:
+   gitpull:
+      description: Pull data from the configured GitHub Repository
+      usage: /gitpull [branch]
+      permission: gitpull.yourcommandpermission
