@@ -6,7 +6,7 @@
 
   <groupId>com.calverin.gitpull</groupId>
   <artifactId>GitPull</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 
   <name>Git Pull</name>
   <url>http://calverin.com</url>
