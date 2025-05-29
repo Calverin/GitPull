@@ -1,5 +1,5 @@
 name: GitPull
-version: 1.0.3
+version: 1.0.4
 main: com.calverin.gitpull.GitPull
 description: Pull data from a private GitHub Repository
 author: Calverin

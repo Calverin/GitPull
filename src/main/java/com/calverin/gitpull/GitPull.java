@@ -20,9 +20,11 @@ public class GitPull extends JavaPlugin implements Listener {
     public static String defaultBranch;
 
     public static String currentBranch;
+    private static java.util.logging.Logger staticLogger;
 
     @Override
     public void onEnable() {
+        staticLogger = getLogger();
         getLogger().info("Using GitPull by Calverin!");
         getServer().getPluginManager().registerEvents(this, this);
         this.getCommand("gitpull").setExecutor(new CommandGitPull());
@@ -68,12 +70,20 @@ public class GitPull extends JavaPlugin implements Listener {
 
     public static boolean cloneAndMove(String branch) {
         boolean success = false;
+        File tempDir = new File(worldName + "/temp");
+
+        // Clean up tempDir if it exists
+        if (tempDir.exists()) {
+            recursiveDelete(tempDir);
+        }
 
         Git git = null;
         try {
+            // Clone to the temp directory
+            tempDir.mkdirs();
             git = Git.cloneRepository()
                     .setURI(gitSSH)
-                    .setDirectory(new File(worldName + "/temp")) // Clone the repository into a temp directory
+                    .setDirectory(tempDir)
                     .setBranch(branch)
                     .setTransportConfigCallback(transport -> {
                         if (transport instanceof SshTransport) {
@@ -81,20 +91,23 @@ public class GitPull extends JavaPlugin implements Listener {
                         }
                     })
                     .call();
+
             success = true;
             currentBranch = branch;
+
+            moveFiles(new File(tempDir, "datapacks"), new File(worldName, "datapacks"));
+
         } catch (Exception e) {
+            staticLogger.severe("Git clone failed: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } finally {
             if (git != null) {
                 git.close();
             }
-            e.printStackTrace();
-            return false;
+            recursiveDelete(tempDir); // Clean up temp repo
         }
-        git.close();
 
-        // Move the files from the temp directory to the main directory
-        moveFiles(new File(worldName + "/temp/datapacks"), new File(worldName + "/datapacks"));
-        recursiveDelete(new File(worldName + "/temp"));
         return success;
     }
 
